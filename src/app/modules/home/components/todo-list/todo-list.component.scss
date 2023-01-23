@@ -1,0 +1,55 @@
+@import '../../../../../dist/scss/rem-calc.scss';
+@import '../../../../../dist/scss/variables.scss';
+
+section {
+  width: 100%;
+  min-height: rem-calc(250);
+
+  background: $secondary-background-color;
+  box-shadow: 0 rem-calc(4) rem-calc(10) rgba(0, 0, 0, 0.08);
+
+  margin-top: rem-calc(20);
+
+  &.loading {
+    background-image: url("../../../../../assets/img/bg-task.png");
+    background-repeat: no-repeat;
+    background-position: center rem-calc(30);
+  }
+
+  ul {
+    padding: rem-calc(20);
+
+    li {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      margin-bottom: rem-calc(10);
+
+      input {
+        &[type="checkbox"] {
+          width: 5%;
+        }
+
+        &[type="text"] {
+          width: 80%;
+          padding: rem-calc(5) rem-calc(10);
+          border: none;
+
+          font-size: rem-calc(16);
+          color: $primary-text-color;
+
+          &.checked {
+            text-decoration: line-through;
+          }
+        }
+      }
+
+      button {
+        width: 5%;
+        background: none;
+        border: none;
+      }
+    }
+  }
+}

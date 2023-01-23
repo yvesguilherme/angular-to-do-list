@@ -1,0 +1,12 @@
+@import '../../../../../dist/scss/rem-calc.scss';
+@import '../../../../../dist/scss/variables.scss';
+
+h1 {
+  width: 100%;
+  padding: rem-calc(15) 0;
+
+  text-align: center;
+  font-size: rem-calc(18);
+  color: $secondary-text-color;
+  background-color: $tertiary-background-color;
+}
