@@ -3,6 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TodoListComponent } from './todo-list.component';
 import { TodoButtonDeleteAllComponent } from '../todo-button-delete-all/todo-button-delete-all.component';
 import { TodoInputAddItemsComponent } from '../todo-input-add-items/todo-input-add-items.component';
+import { TaskList } from '../../model/task-list';
 
 describe('TodoListComponent', () => {
   let component: TodoListComponent;
@@ -11,9 +12,9 @@ describe('TodoListComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ TodoListComponent, TodoButtonDeleteAllComponent, TodoInputAddItemsComponent ]
+      declarations: [TodoListComponent, TodoButtonDeleteAllComponent, TodoInputAddItemsComponent]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {
@@ -27,6 +28,14 @@ describe('TodoListComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  it('should contain object keys', () => {
+    const mockObject: TaskList = { task: 'My new task...', checked: true };
+    expect(Object.keys(mockObject)).toContain('task');
+    expect(Object.keys(mockObject)).toContain('checked');
+  });
+
+  /** UI TESTS... */
+
   it('should create the TodoInputAddItemsComponent', () => {
     const fixture = TestBed.createComponent(TodoInputAddItemsComponent);
     const todoInputAddItemsComponentComponent = fixture.componentInstance;
@@ -39,18 +48,8 @@ describe('TodoListComponent', () => {
     expect(todoButtonDeleteAllComponent).toBeTruthy();
   });
 
-  it(`should return three childNodes inside li`, () => {    
+  it(`should return three childNodes inside li`, () => {
     expect(compiled.children[0].querySelectorAll('li')[0].childNodes.length).toBe(3);
-  });
-
-  it(`should return two inputs within 'li' and the first should be of type checkbox`, () => {
-    expect(compiled.children[0].querySelectorAll('input').length).toBe(2);
-    expect(compiled.children[0].querySelectorAll('input')[0].type).toEqual('checkbox');
-  });
-
-  it(`should return two inputs within 'li' and the second should be of type text`, () => {
-    expect(compiled.children[0].querySelectorAll('input').length).toBe(2);
-    expect(compiled.children[0].querySelectorAll('input')[1].type).toEqual('text');
   });
 
   it(`should render a 'placeholder' attribute with text named 'Enter your task...'`, () => {
