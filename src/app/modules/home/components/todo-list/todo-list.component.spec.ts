@@ -1,27 +1,32 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormsModule } from '@angular/forms';
+import { By } from '@angular/platform-browser';
+import { DebugElement } from '@angular/core';
+
+import { MockComponents } from 'ng-mocks';
 
 import { TodoListComponent } from './todo-list.component';
-import { TodoButtonDeleteAllComponent } from '../todo-button-delete-all/todo-button-delete-all.component';
-import { TodoInputAddItemsComponent } from '../todo-input-add-items/todo-input-add-items.component';
 import { TaskList } from '../../model/task-list';
+import { TodoInputAddItemsComponent } from '../todo-input-add-items/todo-input-add-items.component';
+import { TodoButtonDeleteAllComponent } from '../todo-button-delete-all/todo-button-delete-all.component';
 
 describe('TodoListComponent', () => {
   let component: TodoListComponent;
   let fixture: ComponentFixture<TodoListComponent>;
-  let compiled: HTMLElement;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [TodoListComponent, TodoButtonDeleteAllComponent, TodoInputAddItemsComponent]
+      declarations: [
+        TodoListComponent,
+        MockComponents(TodoInputAddItemsComponent, TodoButtonDeleteAllComponent),
+      ],
+      imports: [FormsModule]
     })
       .compileComponents();
-  });
 
-  beforeEach(() => {
     fixture = TestBed.createComponent(TodoListComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-    compiled = fixture.nativeElement as HTMLElement;
   });
 
   it('should create the TodoListComponent', () => {
@@ -34,35 +39,34 @@ describe('TodoListComponent', () => {
     expect(Object.keys(mockObject)).toContain('checked');
   });
 
+  it('should remove an item from the array of tasks', () => {
+    component.deleteItemTaskList(1);
+    expect(component.taskList.length).toBeLessThan(2);
+  });
+
+  it('should generate a confirm dialog with the proper acronym and remove all items from the array of tasks', () => {
+    spyOn(window, 'confirm').and.returnValue(true);
+    component.deleteAllTaskList();
+    expect(window.confirm).toHaveBeenCalledWith('Você deseja realmente deletar tudo?');
+    expect(component.taskList.length).toBe(0);
+  });
+
+  it('should generate a confirm dialog with the proper acronym and not remove all items from the array of tasks', () => {
+    component.taskList = [{ task: 'My new task...', checked: true }];
+    spyOn(window, 'confirm').and.returnValue(false);
+    component.deleteAllTaskList();
+    expect(window.confirm).toHaveBeenCalledWith('Você deseja realmente deletar tudo?');
+    expect(component.taskList.length).toBe(1);
+  });
+
   /** UI TESTS... */
 
-  it('should create the TodoInputAddItemsComponent', () => {
-    const fixture = TestBed.createComponent(TodoInputAddItemsComponent);
-    const todoInputAddItemsComponentComponent = fixture.componentInstance;
-    expect(todoInputAddItemsComponentComponent).toBeTruthy();
-  });
-
-  it('should create the TodoButtonDeleteAllComponent', () => {
-    const fixture = TestBed.createComponent(TodoButtonDeleteAllComponent);
-    const todoButtonDeleteAllComponent = fixture.componentInstance;
-    expect(todoButtonDeleteAllComponent).toBeTruthy();
-  });
-
-  it(`should return three childNodes inside li`, () => {
-    expect(compiled.children[0].querySelectorAll('li')[0].childNodes.length).toBe(3);
-  });
-
-  it(`should render a 'placeholder' attribute with text named 'Enter your task...'`, () => {
-    expect(compiled.children[0].querySelectorAll('input')[1].placeholder).toEqual('Enter your task...')
-  });
-
-  it(`should return a button with the img inside it`, () => {
-    expect(compiled.querySelector('button')?.tagName).toEqual('button'.toUpperCase());
-    expect(compiled.querySelector('button')?.children[0].tagName).toEqual('img'.toUpperCase());
-  });
-
-  it(`should render an 'alt' attribute with text named 'trash-button'`, () => {
-    expect(compiled.querySelector('img')?.alt).toEqual('trash-button');
-    expect(compiled.querySelector('img')?.attributes[2].value).toEqual('trash-button');
+  it('renders an independent app-todo-input-add-items', () => {
+    const component = findComponent(fixture, 'app-todo-input-add-items');
+    expect(component).toBeTruthy();
   });
 });
+
+function findComponent<T>(fixture: ComponentFixture<T>, selector: string): DebugElement {
+  return fixture.debugElement.query(By.css(selector));
+}
