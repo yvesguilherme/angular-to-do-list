@@ -59,6 +59,12 @@ describe('TodoListComponent', () => {
     expect(component.taskList.length).toBe(1);
   });
 
+  it('should receive a task string and add to taskList', () => {
+    component.setEmitTaskList('test');
+    expect(component.taskList).toContain({ task: 'test', checked: false });
+    expect(component.taskList.length).toBe(1);
+  });
+
   /** UI TESTS... */
 
   it('renders an independent app-todo-input-add-items', () => {

@@ -10,6 +10,6 @@
     </li>
   </ul>
 </section>
-<app-todo-input-add-items />
+<app-todo-input-add-items (emitItemTaskList)="setEmitTaskList($event)" />
 
 <app-todo-button-delete-all *ngIf="taskList.length" (click)="deleteAllTaskList()" />
