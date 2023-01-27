@@ -47,7 +47,7 @@ describe('TodoListComponent', () => {
   it('should generate a confirm dialog with the proper acronym and remove all items from the array of tasks', () => {
     spyOn(window, 'confirm').and.returnValue(true);
     component.deleteAllTaskList();
-    expect(window.confirm).toHaveBeenCalledWith('Você deseja realmente deletar tudo?');
+    expect(window.confirm).toHaveBeenCalledWith('Do you really want to delete everything?');
     expect(component.taskList.length).toBe(0);
   });
 
@@ -55,13 +55,42 @@ describe('TodoListComponent', () => {
     component.taskList = [{ task: 'My new task...', checked: true }];
     spyOn(window, 'confirm').and.returnValue(false);
     component.deleteAllTaskList();
-    expect(window.confirm).toHaveBeenCalledWith('Você deseja realmente deletar tudo?');
+    expect(window.confirm).toHaveBeenCalledWith('Do you really want to delete everything?');
     expect(component.taskList.length).toBe(1);
   });
 
   it('should receive a task string and add to taskList', () => {
     component.setEmitTaskList('test');
     expect(component.taskList).toContain({ task: 'test', checked: false });
+    expect(component.taskList.length).toBe(1);
+  });
+
+  it('should call ngDoCheck and the task \'123\' should be in the last position in the taskList', () => {
+    component.taskList = [
+      { task: '123', checked: false },
+      { task: '321', checked: false }
+    ];
+    component.taskList[0].checked = true;
+    spyOn(component, 'ngDoCheck').and.callThrough();
+    component.ngDoCheck();
+    component['sortTaskList']();
+    expect(component.ngDoCheck).toHaveBeenCalled();
+    expect(component.taskList.findIndex(t => t.task === '123')).toBe(1);
+  });
+
+  it('should generate a confirm dialog when the task name is empty and if true remove the item from the array of tasks', () => {
+    spyOn(window, 'confirm').and.returnValue(true);
+    component.taskList = [{ task: '123', checked: false }];
+    component.validationInput('', 0);
+    expect(window.confirm).toHaveBeenCalledWith('Task is empty, do you want to delete it?');
+    expect(component.taskList.length).toBe(0);
+  });
+
+  it('should generate a confirm dialog when the task name is empty and if false don\'t remove the item from the array of tasks', () => {
+    spyOn(window, 'confirm').and.returnValue(false);
+    component.taskList = [{ task: '123', checked: false }];
+    component.validationInput('', 0);
+    expect(window.confirm).toHaveBeenCalledWith('Task is empty, do you want to delete it?');
     expect(component.taskList.length).toBe(1);
   });
 
