@@ -8,14 +8,25 @@ import { TaskList } from '../../model/task-list';
   styleUrls: ['./todo-list.component.scss']
 })
 export class TodoListComponent implements DoCheck {
-  public taskList: TaskList[] = [];
+  public taskList: TaskList[];
+
+  constructor() {
+    this.taskList = JSON.parse(localStorage.getItem('list') || '[]');
+  }
 
   ngDoCheck(): void {
-    this.sortTaskList();
+    if (this.taskList) {
+      this.sortTaskList();
+      this.setListLocalStorage();
+    }
   }
 
   private sortTaskList(): void {
     this.taskList.sort((first, last) => Number(first.checked) - Number(last.checked));
+  }
+
+  private setListLocalStorage(): void {
+    localStorage.setItem('list', JSON.stringify(this.taskList));
   }
 
   public deleteItemTaskList(index: number): void {

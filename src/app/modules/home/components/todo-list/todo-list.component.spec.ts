@@ -26,7 +26,25 @@ describe('TodoListComponent', () => {
 
     fixture = TestBed.createComponent(TodoListComponent);
     component = fixture.componentInstance;
+    component.taskList = [];
     fixture.detectChanges();
+
+    let store: any = {};
+    const mockLocalStorage = {
+      getItem: (key: string): string => {
+        return key in store ? store[key] : null;
+      },
+      setItem: (key: string, value: string) => {
+        store[key] = `${value}`;
+      },
+      clear: () => {
+        store = {};
+      }
+    };
+
+    spyOn(localStorage, 'getItem').and.callFake(mockLocalStorage.getItem);
+    spyOn(localStorage, 'setItem').and.callFake(mockLocalStorage.getItem);
+    spyOn(localStorage, 'clear').and.callFake(mockLocalStorage.clear);
   });
 
   it('should create the TodoListComponent', () => {
@@ -92,6 +110,18 @@ describe('TodoListComponent', () => {
     component.validationInput('', 0);
     expect(window.confirm).toHaveBeenCalledWith('Task is empty, do you want to delete it?');
     expect(component.taskList.length).toBe(1);
+  });
+
+  it('should store the list of tasks in localStorage', () => {
+    component.setEmitTaskList('task-123');
+    localStorage.setItem('list', JSON.stringify(component.taskList));
+    expect(localStorage.getItem('list')).toEqual(JSON.stringify(component.taskList));
+  });
+
+  it('should return an empty array when the localStorage doens\'t have a task key.', () => {
+    localStorage.clear();
+    component.taskList = JSON.parse('[]');
+    expect(component.taskList).toEqual([]);
   });
 
   /** UI TESTS... */
